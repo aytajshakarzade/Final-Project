@@ -1,0 +1,6 @@
+@SilentInterview.Domain_HostAddress = http://localhost:5249
+
+GET {{SilentInterview.Domain_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

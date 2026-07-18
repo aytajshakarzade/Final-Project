@@ -1,0 +1,15 @@
+D:\repos\SilentInterview.Application\obj\Debug\net9.0\SilentInterview.Application.csproj.AssemblyReference.cache
+D:\repos\SilentInterview.Application\obj\Debug\net9.0\SilentInterview.Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\repos\SilentInterview.Application\obj\Debug\net9.0\SilentInterview.Application.AssemblyInfoInputs.cache
+D:\repos\SilentInterview.Application\obj\Debug\net9.0\SilentInterview.Application.AssemblyInfo.cs
+D:\repos\SilentInterview.Application\obj\Debug\net9.0\SilentInterview.Application.csproj.CoreCompileInputs.cache
+D:\repos\SilentInterview.Application\bin\Debug\net9.0\SilentInterview.Application.deps.json
+D:\repos\SilentInterview.Application\bin\Debug\net9.0\SilentInterview.Application.dll
+D:\repos\SilentInterview.Application\bin\Debug\net9.0\SilentInterview.Application.pdb
+D:\repos\SilentInterview.Application\bin\Debug\net9.0\SilentInterview.Domain.dll
+D:\repos\SilentInterview.Application\bin\Debug\net9.0\SilentInterview.Domain.pdb
+D:\repos\SilentInterview.Application\obj\Debug\net9.0\SilentIn.12D7C7E9.Up2Date
+D:\repos\SilentInterview.Application\obj\Debug\net9.0\SilentInterview.Application.dll
+D:\repos\SilentInterview.Application\obj\Debug\net9.0\refint\SilentInterview.Application.dll
+D:\repos\SilentInterview.Application\obj\Debug\net9.0\SilentInterview.Application.pdb
+D:\repos\SilentInterview.Application\obj\Debug\net9.0\ref\SilentInterview.Application.dll

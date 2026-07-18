@@ -1,0 +1,11 @@
+D:\repos\SilentInterview.Domain\bin\Debug\net9.0\SilentInterview.Domain.deps.json
+D:\repos\SilentInterview.Domain\bin\Debug\net9.0\SilentInterview.Domain.dll
+D:\repos\SilentInterview.Domain\bin\Debug\net9.0\SilentInterview.Domain.pdb
+D:\repos\SilentInterview.Domain\obj\Debug\net9.0\SilentInterview.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\repos\SilentInterview.Domain\obj\Debug\net9.0\SilentInterview.Domain.AssemblyInfoInputs.cache
+D:\repos\SilentInterview.Domain\obj\Debug\net9.0\SilentInterview.Domain.AssemblyInfo.cs
+D:\repos\SilentInterview.Domain\obj\Debug\net9.0\SilentInterview.Domain.csproj.CoreCompileInputs.cache
+D:\repos\SilentInterview.Domain\obj\Debug\net9.0\SilentInterview.Domain.dll
+D:\repos\SilentInterview.Domain\obj\Debug\net9.0\refint\SilentInterview.Domain.dll
+D:\repos\SilentInterview.Domain\obj\Debug\net9.0\SilentInterview.Domain.pdb
+D:\repos\SilentInterview.Domain\obj\Debug\net9.0\ref\SilentInterview.Domain.dll
