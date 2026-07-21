@@ -1,8 +1,8 @@
-﻿namespace SilentInterview.Application.DTOs.Company;
-
-public class CreateCompanyRequest
+﻿public class CreateCompanyRequest
 {
     public string Name { get; set; } = string.Empty;
+
+    public string Industry { get; set; } = string.Empty;
 
     public string Description { get; set; } = string.Empty;
 

@@ -1,9 +1,11 @@
-﻿using System.Text;
+﻿using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 
 using Microsoft.Extensions.Configuration;
 
 using SilentInterview.Application.Common.Interfaces;
+using SilentInterview.Infrastructure.AI.Prompts;
 
 namespace SilentInterview.Infrastructure.AI;
 
@@ -19,10 +21,19 @@ public class OpenAIService : IOpenAIService
         _httpClient = httpClient;
         _configuration = configuration;
 
+        var apiKey = _configuration["OpenAI:ApiKey"];
+
+        if (string.IsNullOrWhiteSpace(apiKey))
+        {
+            throw new InvalidOperationException(
+                "OpenAI API key is not configured.");
+        }
+
+        _httpClient.BaseAddress =
+            new Uri(_configuration["OpenAI:BaseUrl"]!);
+
         _httpClient.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue(
-                "Bearer",
-                _configuration["OpenAI:ApiKey"]);
+            new AuthenticationHeaderValue("Bearer", apiKey);
     }
 
     public async Task<string> GenerateNextQuestionAsync(
@@ -31,21 +42,20 @@ public class OpenAIService : IOpenAIService
         List<string> previousMessages,
         CancellationToken cancellationToken = default)
     {
-        var prompt = BuildInterviewPrompt(
+        var prompt = InterviewPromptBuilder.Build(
             position,
             candidateAnswer,
             previousMessages);
 
         var body = new
         {
-            model = "gpt-5.5",
+            model = _configuration["OpenAI:ChatModel"],
             messages = new object[]
             {
                 new
                 {
                     role = "system",
-                    content =
-                        "You are an experienced HR interviewer."
+                    content = "You are an experienced HR interviewer."
                 },
                 new
                 {
@@ -59,25 +69,38 @@ public class OpenAIService : IOpenAIService
         var json = JsonSerializer.Serialize(body);
 
         var response = await _httpClient.PostAsync(
-            "https://api.openai.com/v1/chat/completions",
+            "chat/completions",
             new StringContent(
                 json,
                 Encoding.UTF8,
                 "application/json"),
             cancellationToken);
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            var error =
+                await response.Content.ReadAsStringAsync(cancellationToken);
+
+            throw new Exception($"OpenAI Error: {error}");
+        }
 
         var result =
             await response.Content.ReadAsStringAsync(cancellationToken);
 
-        using var doc = JsonDocument.Parse(result);
+        using var document = JsonDocument.Parse(result);
 
-        return doc.RootElement
-            .GetProperty("choices")[0]
+        var choices = document.RootElement.GetProperty("choices");
+
+        if (choices.GetArrayLength() == 0)
+        {
+            throw new Exception("OpenAI returned no choices.");
+        }
+
+        return choices[0]
             .GetProperty("message")
             .GetProperty("content")
-            .GetString()!;
+            .GetString()!
+            .Trim();
     }
 
     public async Task<string> GenerateFeedbackAsync(
@@ -85,81 +108,63 @@ public class OpenAIService : IOpenAIService
         List<string> conversation,
         CancellationToken cancellationToken = default)
     {
-        var prompt = $"""
-
-Evaluate the candidate for the {position} position.
-
-Conversation:
-
-{string.Join(Environment.NewLine, conversation)}
-
-Return professional feedback.
-
-""";
+        var prompt = FeedbackPromptBuilder.Build(
+            position,
+            conversation);
 
         var body = new
         {
-            model = "gpt-5.5",
-            messages = new[]
+            model = _configuration["OpenAI:ChatModel"],
+            messages = new object[]
             {
                 new
                 {
-                    role="user",
-                    content=prompt
+                    role = "system",
+                    content = "You are an experienced technical interviewer."
+                },
+                new
+                {
+                    role = "user",
+                    content = prompt
                 }
-            }
+            },
+            temperature = 0.3
         };
 
         var json = JsonSerializer.Serialize(body);
 
         var response = await _httpClient.PostAsync(
-            "https://api.openai.com/v1/chat/completions",
+            "chat/completions",
             new StringContent(
                 json,
                 Encoding.UTF8,
                 "application/json"),
             cancellationToken);
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            var error =
+                await response.Content.ReadAsStringAsync(cancellationToken);
+
+            throw new Exception($"OpenAI Error: {error}");
+        }
 
         var result =
             await response.Content.ReadAsStringAsync(cancellationToken);
 
-        using var doc = JsonDocument.Parse(result);
+        using var document = JsonDocument.Parse(result);
 
-        return doc.RootElement
-            .GetProperty("choices")[0]
-            .GetProperty("message")
-            .GetProperty("content")
-            .GetString()!;
-    }
+        var choices = document.RootElement.GetProperty("choices");
 
-    private static string BuildInterviewPrompt(
-        string position,
-        string answer,
-        List<string> history)
-    {
-        var sb = new StringBuilder();
-
-        sb.AppendLine($"Position: {position}");
-        sb.AppendLine();
-
-        sb.AppendLine("Conversation:");
-
-        foreach (var item in history)
+        if (choices.GetArrayLength() == 0)
         {
-            sb.AppendLine(item);
+            throw new Exception("OpenAI returned no choices.");
         }
 
-        sb.AppendLine();
-
-        sb.AppendLine($"Candidate Answer: {answer}");
-
-        sb.AppendLine();
-
-        sb.AppendLine(
-            "Generate ONLY the next interview question. Do not explain anything.");
-
-        return sb.ToString();
+        return choices[0]
+            .GetProperty("message")
+            .GetProperty("content")
+            .GetString()!
+            .Trim();
     }
 }

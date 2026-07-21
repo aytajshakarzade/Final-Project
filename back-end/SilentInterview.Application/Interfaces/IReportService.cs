@@ -1,10 +1,12 @@
-﻿using SilentInterview.Application.DTOs.Report;
+﻿using SilentInterview.Application.Common.Models;
+using SilentInterview.Application.DTOs.Report;
 
 namespace SilentInterview.Application.Interfaces;
 
 public interface IReportService
 {
-    Task<List<ReportDto>> GetAllAsync();
+    Task<PagedResult<ReportDto>> GetAllAsync(
+        ReportQueryParameters parameters);
 
     Task<ReportDto?> GetByIdAsync(Guid id);
 

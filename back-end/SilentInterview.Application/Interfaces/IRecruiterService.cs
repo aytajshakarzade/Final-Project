@@ -1,10 +1,12 @@
-﻿using SilentInterview.Application.DTOs.Recruiter;
+﻿using SilentInterview.Application.Common.Models;
+using SilentInterview.Application.DTOs.Recruiter;
 
 namespace SilentInterview.Application.Interfaces;
 
 public interface IRecruiterService
 {
-    Task<List<RecruiterDto>> GetAllAsync();
+    Task<PagedResult<RecruiterDto>> GetAllAsync(
+        RecruiterQueryParameters parameters);
 
     Task<RecruiterDto?> GetByIdAsync(Guid id);
 

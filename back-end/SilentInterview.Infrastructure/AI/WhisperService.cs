@@ -19,10 +19,19 @@ public class WhisperService : IWhisperService
         _httpClient = httpClient;
         _configuration = configuration;
 
+        var apiKey = _configuration["OpenAI:ApiKey"];
+
+        if (string.IsNullOrWhiteSpace(apiKey))
+        {
+            throw new InvalidOperationException(
+                "OpenAI API key is not configured.");
+        }
+
+        _httpClient.BaseAddress =
+            new Uri(_configuration["OpenAI:BaseUrl"]!);
+
         _httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue(
-                "Bearer",
-                _configuration["OpenAI:ApiKey"]);
+            new AuthenticationHeaderValue("Bearer", apiKey);
     }
 
     public async Task<string> TranscribeAsync(
@@ -38,29 +47,36 @@ public class WhisperService : IWhisperService
         fileContent.Headers.ContentType =
             new MediaTypeHeaderValue(contentType);
 
-        form.Add(
-            fileContent,
-            "file",
-            fileName);
+        form.Add(fileContent, "file", fileName);
 
         form.Add(
-            new StringContent("whisper-1"),
+            new StringContent(
+                _configuration["OpenAI:WhisperModel"]!),
             "model");
 
         var response = await _httpClient.PostAsync(
-            "https://api.openai.com/v1/audio/transcriptions",
+            "audio/transcriptions",
             form,
             cancellationToken);
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            var error =
+                await response.Content.ReadAsStringAsync(cancellationToken);
+
+            throw new Exception($"OpenAI Whisper Error: {error}");
+        }
 
         var json =
             await response.Content.ReadAsStringAsync(cancellationToken);
 
         using var document = JsonDocument.Parse(json);
 
-        return document.RootElement
-            .GetProperty("text")
-            .GetString()!;
+        if (!document.RootElement.TryGetProperty("text", out var textElement))
+        {
+            throw new Exception("Whisper returned an invalid response.");
+        }
+
+        return textElement.GetString()!.Trim();
     }
 }

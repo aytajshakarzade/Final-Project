@@ -1,10 +1,12 @@
-﻿using SilentInterview.Application.DTOs.JobApplication;
+﻿using SilentInterview.Application.Common.Models;
+using SilentInterview.Application.DTOs.JobApplication;
 
 namespace SilentInterview.Application.Interfaces;
 
 public interface IJobApplicationService
 {
-    Task<List<JobApplicationDto>> GetAllAsync();
+    Task<PagedResult<JobApplicationDto>> GetAllAsync(
+        JobApplicationQueryParameters parameters);
 
     Task<JobApplicationDto?> GetByIdAsync(Guid id);
 

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Asp.Versioning;
 using SilentInterview.Api.Controllers.Base;
+using SilentInterview.Application.Common.Models;
 using SilentInterview.Application.DTOs.InterviewSession;
 using SilentInterview.Application.Interfaces;
 
@@ -10,7 +12,8 @@ namespace SilentInterview.Api.Controllers;
 /// Interview Session Management
 /// </summary>
 [Authorize]
-[Route("api/[controller]")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class InterviewSessionController : BaseApiController
 {
     private readonly IInterviewSessionService _service;
@@ -22,13 +25,15 @@ public class InterviewSessionController : BaseApiController
     }
 
     /// <summary>
-    /// Get all interview sessions
+    /// Get all interview sessions.
+    /// Supports pagination, filtering, searching and sorting.
     /// </summary>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(
+        [FromQuery] InterviewSessionQueryParameters parameters)
     {
-        var sessions = await _service.GetAllAsync();
+        var sessions = await _service.GetAllAsync(parameters);
 
         return Success(
             sessions,
@@ -36,7 +41,7 @@ public class InterviewSessionController : BaseApiController
     }
 
     /// <summary>
-    /// Get interview session by id
+    /// Get interview session by id.
     /// </summary>
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -58,7 +63,7 @@ public class InterviewSessionController : BaseApiController
     }
 
     /// <summary>
-    /// Create interview session
+    /// Create interview session.
     /// </summary>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -74,9 +79,11 @@ public class InterviewSessionController : BaseApiController
     }
 
     /// <summary>
-    /// Update interview session
+    /// Update interview session.
     /// </summary>
     [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(
         Guid id,
         UpdateInterviewSessionRequest request)
@@ -96,9 +103,11 @@ public class InterviewSessionController : BaseApiController
     }
 
     /// <summary>
-    /// Delete interview session
+    /// Delete interview session.
     /// </summary>
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
     {
         var deleted = await _service.DeleteAsync(id);

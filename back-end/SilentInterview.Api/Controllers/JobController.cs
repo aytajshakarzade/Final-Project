@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Asp.Versioning;
 using SilentInterview.Api.Controllers.Base;
+using SilentInterview.Application.Common.Models;
 using SilentInterview.Application.DTOs.Job;
 using SilentInterview.Application.Interfaces;
 
@@ -10,7 +12,8 @@ namespace SilentInterview.Api.Controllers;
 /// Job Management
 /// </summary>
 [Authorize]
-[Route("api/[controller]")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class JobController : BaseApiController
 {
     private readonly IJobService _jobService;
@@ -22,12 +25,14 @@ public class JobController : BaseApiController
 
     /// <summary>
     /// Get all jobs
+    /// Supports pagination, search, filtering and sorting.
     /// </summary>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(
+        [FromQuery] JobQueryParameters parameters)
     {
-        var jobs = await _jobService.GetAllAsync();
+        var jobs = await _jobService.GetAllAsync(parameters);
 
         return Success(
             jobs,
@@ -61,7 +66,8 @@ public class JobController : BaseApiController
     /// </summary>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    public async Task<IActionResult> Create(CreateJobRequest request)
+    public async Task<IActionResult> Create(
+        CreateJobRequest request)
     {
         var job = await _jobService.CreateAsync(request);
 
@@ -75,6 +81,8 @@ public class JobController : BaseApiController
     /// Update job
     /// </summary>
     [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(
         Guid id,
         UpdateJobRequest request)
@@ -97,6 +105,8 @@ public class JobController : BaseApiController
     /// Delete job
     /// </summary>
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
     {
         var deleted = await _jobService.DeleteAsync(id);

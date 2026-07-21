@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 using SilentInterview.Api.Controllers.Base;
+using SilentInterview.Application.Common.Models;
 using SilentInterview.Application.DTOs.Candidate;
 using SilentInterview.Application.Interfaces;
+using Asp.Versioning;
 
 namespace SilentInterview.Api.Controllers;
 
@@ -10,7 +13,8 @@ namespace SilentInterview.Api.Controllers;
 /// Candidate Management
 /// </summary>
 [Authorize]
-[Route("api/[controller]")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class CandidateController : BaseApiController
 {
     private readonly ICandidateService _candidateService;
@@ -22,12 +26,14 @@ public class CandidateController : BaseApiController
 
     /// <summary>
     /// Get all candidates
+    /// Supports pagination, search, filtering and sorting.
     /// </summary>
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAll(
+        [FromQuery] CandidateQueryParameters parameters)
     {
-        var candidates =
-            await _candidateService.GetAllAsync();
+        var candidates = await _candidateService.GetAllAsync(parameters);
 
         return Success(
             candidates,
@@ -38,10 +44,11 @@ public class CandidateController : BaseApiController
     /// Get candidate by id
     /// </summary>
     [HttpGet("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var candidate =
-            await _candidateService.GetByIdAsync(id);
+        var candidate = await _candidateService.GetByIdAsync(id);
 
         if (candidate == null)
         {
@@ -59,11 +66,11 @@ public class CandidateController : BaseApiController
     /// Create candidate
     /// </summary>
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> Create(
         CreateCandidateRequest request)
     {
-        var candidate =
-            await _candidateService.CreateAsync(request);
+        var candidate = await _candidateService.CreateAsync(request);
 
         return Success(
             candidate,
@@ -75,12 +82,13 @@ public class CandidateController : BaseApiController
     /// Update candidate
     /// </summary>
     [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(
         Guid id,
         UpdateCandidateRequest request)
     {
-        var updated =
-            await _candidateService.UpdateAsync(id, request);
+        var updated = await _candidateService.UpdateAsync(id, request);
 
         if (!updated)
         {
@@ -98,10 +106,11 @@ public class CandidateController : BaseApiController
     /// Delete candidate
     /// </summary>
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var deleted =
-            await _candidateService.DeleteAsync(id);
+        var deleted = await _candidateService.DeleteAsync(id);
 
         if (!deleted)
         {

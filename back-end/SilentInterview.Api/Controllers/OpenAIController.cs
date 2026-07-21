@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SilentInterview.Api.Contracts.OpenAI;
 using SilentInterview.Application.Common.Interfaces;
-
+using Asp.Versioning;
 namespace SilentInterview.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class OpenAIController : ControllerBase
 {
     private readonly IWhisperService _whisperService;

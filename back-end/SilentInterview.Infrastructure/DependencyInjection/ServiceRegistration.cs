@@ -1,9 +1,7 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SilentInterview.Application.Interfaces;
-using SilentInterview.Application.Mappings;
 using SilentInterview.Infrastructure.Persistence;
 using SilentInterview.Infrastructure.Repositories;
 using SilentInterview.Infrastructure.Services;
@@ -16,42 +14,26 @@ public static class ServiceRegistration
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // ==========================
         // Database
-        // ==========================
         services.AddDbContext<SilentInterviewDbContext>(options =>
         {
             options.UseSqlServer(
                 configuration.GetConnectionString("DefaultConnection"));
         });
 
-        // ==========================
-        // AutoMapper
-        // ==========================
-        services.AddAutoMapper(typeof(MappingProfile).Assembly);
-
-        // ==========================
         // Authentication
-        // ==========================
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IAuthService, AuthService>();
 
-        // ==========================
         // Unit Of Work
-        // ==========================
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICompanyRepository, CompanyRepository>();
 
-
-        // ==========================
         // Generic Repository
-        // ==========================
         services.AddScoped(typeof(IGenericRepository<>),
                            typeof(GenericRepository<>));
 
-        // ==========================
         // Business Services
-        // ==========================
         services.AddScoped<ICompanyService, CompanyService>();
         services.AddScoped<IJobService, JobService>();
         services.AddScoped<ICandidateService, CandidateService>();

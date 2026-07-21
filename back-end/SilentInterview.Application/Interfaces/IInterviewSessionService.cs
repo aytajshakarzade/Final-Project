@@ -1,10 +1,12 @@
-﻿using SilentInterview.Application.DTOs.InterviewSession;
+﻿using SilentInterview.Application.Common.Models;
+using SilentInterview.Application.DTOs.InterviewSession;
 
 namespace SilentInterview.Application.Interfaces;
 
 public interface IInterviewSessionService
 {
-    Task<List<InterviewSessionDto>> GetAllAsync();
+    Task<PagedResult<InterviewSessionDto>> GetAllAsync(
+        InterviewSessionQueryParameters parameters);
 
     Task<InterviewSessionDto?> GetByIdAsync(Guid id);
 

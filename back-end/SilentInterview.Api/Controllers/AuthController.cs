@@ -3,13 +3,15 @@ using SilentInterview.Api.Controllers.Base;
 using SilentInterview.Application.Common.Responses;
 using SilentInterview.Application.DTOs.Auth;
 using SilentInterview.Application.Interfaces;
+using Asp.Versioning;
 
 namespace SilentInterview.Api.Controllers;
 
 /// <summary>
 /// Authentication operations
 /// </summary>
-[Route("api/[controller]")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class AuthController : BaseApiController
 {
     private readonly IAuthService _authService;

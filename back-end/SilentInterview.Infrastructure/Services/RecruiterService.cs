@@ -1,8 +1,11 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+
+using SilentInterview.Application.Common.Models;
 using SilentInterview.Application.DTOs.Recruiter;
 using SilentInterview.Application.Interfaces;
+
 using SilentInterview.Domain.Entities;
+
 using SilentInterview.Infrastructure.Persistence;
 
 namespace SilentInterview.Infrastructure.Services;
@@ -10,54 +13,100 @@ namespace SilentInterview.Infrastructure.Services;
 public class RecruiterService : IRecruiterService
 {
     private readonly SilentInterviewDbContext _context;
-    private readonly IMapper _mapper;
 
-    public RecruiterService(
-        SilentInterviewDbContext context,
-        IMapper mapper)
+    public RecruiterService(SilentInterviewDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
-    public async Task<List<RecruiterDto>> GetAllAsync()
+    public async Task<PagedResult<RecruiterDto>> GetAllAsync(
+        RecruiterQueryParameters parameters)
     {
-        var recruiters = await _context.Recruiters.ToListAsync();
+        IQueryable<Recruiter> query = _context.Recruiters.AsNoTracking();
 
-        return _mapper.Map<List<RecruiterDto>>(recruiters);
+        // User Filter
+        if (parameters.UserId.HasValue)
+        {
+            query = query.Where(x =>
+                x.UserId == parameters.UserId.Value);
+        }
+
+        // Company Filter
+        if (parameters.CompanyId.HasValue)
+        {
+            query = query.Where(x =>
+                x.CompanyId == parameters.CompanyId.Value);
+        }
+
+        // Sorting
+        query = parameters.SortBy.ToLower() switch
+        {
+            "userid" => parameters.Descending
+                ? query.OrderByDescending(x => x.UserId)
+                : query.OrderBy(x => x.UserId),
+
+            "companyid" => parameters.Descending
+                ? query.OrderByDescending(x => x.CompanyId)
+                : query.OrderBy(x => x.CompanyId),
+
+            _ => parameters.Descending
+                ? query.OrderByDescending(x => x.Id)
+                : query.OrderBy(x => x.Id)
+        };
+
+        var totalCount = await query.CountAsync();
+
+        var recruiters = await query
+            .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+            .Take(parameters.PageSize)
+            .ToListAsync();
+
+        return new PagedResult<RecruiterDto>
+        {
+            Items = recruiters.Select(ToDto).ToList(),
+            PageNumber = parameters.PageNumber,
+            PageSize = parameters.PageSize,
+            TotalCount = totalCount
+        };
     }
 
     public async Task<RecruiterDto?> GetByIdAsync(Guid id)
     {
-        var recruiter = await _context.Recruiters.FindAsync(id);
+        var recruiter = await _context.Recruiters
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id);
 
-        if (recruiter == null)
-            return null;
-
-        return _mapper.Map<RecruiterDto>(recruiter);
+        return recruiter == null
+            ? null
+            : ToDto(recruiter);
     }
 
     public async Task<RecruiterDto> CreateAsync(CreateRecruiterRequest request)
     {
-        var recruiter = _mapper.Map<Recruiter>(request);
-
-        recruiter.Id = Guid.NewGuid();
+        var recruiter = new Recruiter
+        {
+            Id = Guid.NewGuid(),
+            UserId = request.UserId,
+            CompanyId = request.CompanyId
+        };
 
         _context.Recruiters.Add(recruiter);
 
         await _context.SaveChangesAsync();
 
-        return _mapper.Map<RecruiterDto>(recruiter);
+        return ToDto(recruiter);
     }
 
-    public async Task<bool> UpdateAsync(Guid id, UpdateRecruiterRequest request)
+    public async Task<bool> UpdateAsync(
+        Guid id,
+        UpdateRecruiterRequest request)
     {
         var recruiter = await _context.Recruiters.FindAsync(id);
 
         if (recruiter == null)
             return false;
 
-        _mapper.Map(request, recruiter);
+        recruiter.CompanyId = request.CompanyId;
 
         await _context.SaveChangesAsync();
 
@@ -76,5 +125,15 @@ public class RecruiterService : IRecruiterService
         await _context.SaveChangesAsync();
 
         return true;
+    }
+
+    private static RecruiterDto ToDto(Recruiter recruiter)
+    {
+        return new RecruiterDto
+        {
+            Id = recruiter.Id,
+            UserId = recruiter.UserId,
+            CompanyId = recruiter.CompanyId
+        };
     }
 }

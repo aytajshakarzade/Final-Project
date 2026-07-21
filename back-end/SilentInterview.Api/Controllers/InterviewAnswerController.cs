@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Asp.Versioning;
 using SilentInterview.Api.Controllers.Base;
+using SilentInterview.Application.Common.Models;
 using SilentInterview.Application.DTOs.InterviewAnswer;
 using SilentInterview.Application.Interfaces;
 
@@ -10,7 +12,8 @@ namespace SilentInterview.Api.Controllers;
 /// Interview Answer Management
 /// </summary>
 [Authorize]
-[Route("api/[controller]")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class InterviewAnswerController : BaseApiController
 {
     private readonly IInterviewAnswerService _service;
@@ -22,12 +25,15 @@ public class InterviewAnswerController : BaseApiController
     }
 
     /// <summary>
-    /// Get all interview answers
+    /// Get all interview answers.
+    /// Supports pagination, filtering, searching and sorting.
     /// </summary>
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAll(
+        [FromQuery] InterviewAnswerQueryParameters parameters)
     {
-        var answers = await _service.GetAllAsync();
+        var answers = await _service.GetAllAsync(parameters);
 
         return Success(
             answers,
@@ -35,9 +41,11 @@ public class InterviewAnswerController : BaseApiController
     }
 
     /// <summary>
-    /// Get interview answer by id
+    /// Get interview answer by id.
     /// </summary>
     [HttpGet("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id)
     {
         var answer = await _service.GetByIdAsync(id);
@@ -55,9 +63,10 @@ public class InterviewAnswerController : BaseApiController
     }
 
     /// <summary>
-    /// Create interview answer
+    /// Create interview answer.
     /// </summary>
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> Create(
         CreateInterviewAnswerRequest request)
     {
@@ -70,9 +79,11 @@ public class InterviewAnswerController : BaseApiController
     }
 
     /// <summary>
-    /// Update interview answer
+    /// Update interview answer.
     /// </summary>
     [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(
         Guid id,
         UpdateInterviewAnswerRequest request)
@@ -92,9 +103,11 @@ public class InterviewAnswerController : BaseApiController
     }
 
     /// <summary>
-    /// Delete interview answer
+    /// Delete interview answer.
     /// </summary>
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
     {
         var deleted = await _service.DeleteAsync(id);

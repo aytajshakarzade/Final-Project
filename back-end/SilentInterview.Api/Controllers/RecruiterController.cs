@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Asp.Versioning;
 using SilentInterview.Api.Controllers.Base;
+using SilentInterview.Application.Common.Models;
 using SilentInterview.Application.DTOs.Recruiter;
 using SilentInterview.Application.Interfaces;
 
@@ -10,7 +12,8 @@ namespace SilentInterview.Api.Controllers;
 /// Recruiter Management
 /// </summary>
 [Authorize]
-[Route("api/[controller]")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class RecruiterController : BaseApiController
 {
     private readonly IRecruiterService _recruiterService;
@@ -21,13 +24,15 @@ public class RecruiterController : BaseApiController
     }
 
     /// <summary>
-    /// Get all recruiters
+    /// Get all recruiters.
+    /// Supports pagination, filtering and sorting.
     /// </summary>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(
+        [FromQuery] RecruiterQueryParameters parameters)
     {
-        var recruiters = await _recruiterService.GetAllAsync();
+        var recruiters = await _recruiterService.GetAllAsync(parameters);
 
         return Success(
             recruiters,
@@ -35,7 +40,7 @@ public class RecruiterController : BaseApiController
     }
 
     /// <summary>
-    /// Get recruiter by id
+    /// Get recruiter by id.
     /// </summary>
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -57,11 +62,12 @@ public class RecruiterController : BaseApiController
     }
 
     /// <summary>
-    /// Create recruiter
+    /// Create recruiter.
     /// </summary>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    public async Task<IActionResult> Create(CreateRecruiterRequest request)
+    public async Task<IActionResult> Create(
+        CreateRecruiterRequest request)
     {
         var recruiter = await _recruiterService.CreateAsync(request);
 
@@ -72,9 +78,11 @@ public class RecruiterController : BaseApiController
     }
 
     /// <summary>
-    /// Update recruiter
+    /// Update recruiter.
     /// </summary>
     [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(
         Guid id,
         UpdateRecruiterRequest request)
@@ -94,9 +102,11 @@ public class RecruiterController : BaseApiController
     }
 
     /// <summary>
-    /// Delete recruiter
+    /// Delete recruiter.
     /// </summary>
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
     {
         var deleted = await _recruiterService.DeleteAsync(id);

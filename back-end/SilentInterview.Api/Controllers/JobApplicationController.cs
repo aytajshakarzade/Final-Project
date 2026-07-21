@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Asp.Versioning;
 using SilentInterview.Api.Controllers.Base;
+using SilentInterview.Application.Common.Models;
 using SilentInterview.Application.DTOs.JobApplication;
 using SilentInterview.Application.Interfaces;
 
@@ -10,7 +12,8 @@ namespace SilentInterview.Api.Controllers;
 /// Job Application Management
 /// </summary>
 [Authorize]
-[Route("api/[controller]")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class JobApplicationController : BaseApiController
 {
     private readonly IJobApplicationService _jobApplicationService;
@@ -22,13 +25,15 @@ public class JobApplicationController : BaseApiController
     }
 
     /// <summary>
-    /// Get all applications
+    /// Get all applications.
+    /// Supports pagination, filtering, searching and sorting.
     /// </summary>
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAll(
+        [FromQuery] JobApplicationQueryParameters parameters)
     {
-        var applications =
-            await _jobApplicationService.GetAllAsync();
+        var applications = await _jobApplicationService.GetAllAsync(parameters);
 
         return Success(
             applications,
@@ -36,13 +41,14 @@ public class JobApplicationController : BaseApiController
     }
 
     /// <summary>
-    /// Get application by id
+    /// Get application by id.
     /// </summary>
     [HttpGet("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var application =
-            await _jobApplicationService.GetByIdAsync(id);
+        var application = await _jobApplicationService.GetByIdAsync(id);
 
         if (application == null)
         {
@@ -57,14 +63,14 @@ public class JobApplicationController : BaseApiController
     }
 
     /// <summary>
-    /// Create application
+    /// Create application.
     /// </summary>
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> Create(
         CreateJobApplicationRequest request)
     {
-        var application =
-            await _jobApplicationService.CreateAsync(request);
+        var application = await _jobApplicationService.CreateAsync(request);
 
         return Success(
             application,
@@ -73,15 +79,16 @@ public class JobApplicationController : BaseApiController
     }
 
     /// <summary>
-    /// Update application
+    /// Update application status.
     /// </summary>
     [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(
         Guid id,
         UpdateJobApplicationRequest request)
     {
-        var updated =
-            await _jobApplicationService.UpdateAsync(id, request);
+        var updated = await _jobApplicationService.UpdateAsync(id, request);
 
         if (!updated)
         {
@@ -96,13 +103,14 @@ public class JobApplicationController : BaseApiController
     }
 
     /// <summary>
-    /// Delete application
+    /// Delete application.
     /// </summary>
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var deleted =
-            await _jobApplicationService.DeleteAsync(id);
+        var deleted = await _jobApplicationService.DeleteAsync(id);
 
         if (!deleted)
         {
