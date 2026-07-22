@@ -1,0 +1,36 @@
+2026-07-21 18:17:01.316 +04:00 [INF] Starting SilentInterview API
+2026-07-21 18:22:50.281 +04:00 [INF] Starting SilentInterview API
+2026-07-21 18:24:24.460 +04:00 [INF] Starting SilentInterview API
+2026-07-21 18:26:14.529 +04:00 [WRN] Failed to determine the https port for redirect.
+2026-07-21 18:26:14.598 +04:00 [INF] HTTP OPTIONS /api/InterviewSession responded 204 in 86.1745 ms
+2026-07-21 18:26:14.598 +04:00 [INF] HTTP OPTIONS /api/Job responded 204 in 85.6789 ms
+2026-07-21 18:26:14.599 +04:00 [INF] HTTP OPTIONS /api/Candidate responded 204 in 86.0109 ms
+2026-07-21 18:26:14.598 +04:00 [INF] HTTP OPTIONS /api/Company responded 204 in 85.9270 ms
+2026-07-21 18:26:14.598 +04:00 [INF] HTTP OPTIONS /api/Recruiter responded 204 in 85.8879 ms
+2026-07-21 18:26:14.598 +04:00 [INF] HTTP OPTIONS /api/JobApplication responded 204 in 87.0192 ms
+2026-07-21 18:26:14.718 +04:00 [INF] HTTP OPTIONS /api/Report responded 204 in 0.8403 ms
+2026-07-21 18:26:14.718 +04:00 [INF] HTTP OPTIONS /api/InterviewAnswer responded 204 in 1.5115 ms
+2026-07-21 18:26:14.741 +04:00 [INF] HTTP OPTIONS /api/Candidate responded 204 in 1.6865 ms
+2026-07-21 18:26:14.754 +04:00 [INF] HTTP OPTIONS /api/Company responded 204 in 0.1676 ms
+2026-07-21 18:26:14.779 +04:00 [INF] HTTP OPTIONS /api/Recruiter responded 204 in 0.1616 ms
+2026-07-21 18:26:14.820 +04:00 [INF] HTTP OPTIONS /api/Job responded 204 in 1.9896 ms
+2026-07-21 18:26:14.858 +04:00 [INF] HTTP OPTIONS /api/JobApplication responded 204 in 0.4138 ms
+2026-07-21 18:26:14.889 +04:00 [INF] HTTP OPTIONS /api/InterviewSession responded 204 in 0.3575 ms
+2026-07-21 18:26:14.927 +04:00 [INF] HTTP OPTIONS /api/InterviewAnswer responded 204 in 0.2192 ms
+2026-07-21 18:26:14.956 +04:00 [INF] HTTP OPTIONS /api/Report responded 204 in 0.3851 ms
+2026-07-21 18:26:20.576 +04:00 [INF] HTTP GET /api/Job responded 404 in 5558.6001 ms
+2026-07-21 18:26:20.576 +04:00 [INF] HTTP GET /api/Recruiter responded 404 in 5432.7507 ms
+2026-07-21 18:26:20.576 +04:00 [INF] HTTP GET /api/Company responded 404 in 5480.9230 ms
+2026-07-21 18:26:20.576 +04:00 [INF] HTTP GET /api/InterviewSession responded 404 in 5555.9887 ms
+2026-07-21 18:26:20.576 +04:00 [INF] HTTP GET /api/JobApplication responded 404 in 5374.3382 ms
+2026-07-21 18:26:20.576 +04:00 [INF] HTTP GET /api/Candidate responded 404 in 5516.0966 ms
+2026-07-21 18:26:20.613 +04:00 [INF] HTTP GET /api/Report responded 404 in 2.7216 ms
+2026-07-21 18:26:20.626 +04:00 [INF] HTTP GET /api/InterviewAnswer responded 404 in 2.0833 ms
+2026-07-21 18:26:20.652 +04:00 [INF] HTTP GET /api/Job responded 404 in 2.5112 ms
+2026-07-21 18:26:20.679 +04:00 [INF] HTTP GET /api/Recruiter responded 404 in 1.9248 ms
+2026-07-21 18:26:20.707 +04:00 [INF] HTTP GET /api/Company responded 404 in 1.5323 ms
+2026-07-21 18:26:20.727 +04:00 [INF] HTTP GET /api/InterviewSession responded 404 in 0.9026 ms
+2026-07-21 18:26:20.750 +04:00 [INF] HTTP GET /api/JobApplication responded 404 in 2.6631 ms
+2026-07-21 18:26:20.779 +04:00 [INF] HTTP GET /api/Candidate responded 404 in 2.2236 ms
+2026-07-21 18:26:20.799 +04:00 [INF] HTTP GET /api/Report responded 404 in 3.3314 ms
+2026-07-21 18:26:20.828 +04:00 [INF] HTTP GET /api/InterviewAnswer responded 404 in 3.1837 ms

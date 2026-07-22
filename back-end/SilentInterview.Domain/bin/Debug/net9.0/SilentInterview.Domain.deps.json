@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {
+      "SilentInterview.Domain/1.0.0": {
+        "runtime": {
+          "SilentInterview.Domain.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "SilentInterview.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
