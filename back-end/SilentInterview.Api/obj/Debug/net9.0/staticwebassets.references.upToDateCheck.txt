@@ -1,1 +1,0 @@
-D:\repos\SilentInterview.Domain\obj\Debug\net9.0\staticwebassets.build.json
