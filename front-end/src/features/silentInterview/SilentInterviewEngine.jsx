@@ -13,6 +13,7 @@ import { jobApi } from "../../api/jobApi";
 import { candidateApi } from "../../api/candidateApi";
 import { interviewApi } from "../../api/interviewApi";
 import { openaiApi } from "../../api/openaiApi";
+import Chart from "chart.js/auto";
 
 const SilentInterview = () => {
     useEffect(() => {
@@ -5206,8 +5207,11 @@ const SilentInterview = () => {
                                   <button class="lang-btn" onclick="changeLang('en')">EN</button>
                                   <button class="lang-btn" onclick="changeLang('ru')">RU</button>
                               </div>
-                              <button class="btn btn-secondary" data-open-auth="login" data-key="login">Daxil ol</button>
-                              <button class="btn btn-primary" data-open-auth="signup" data-key="signup">Qeydiyyat</button>
+                              <button
+                                    class="btn btn-primary"
+                                    onclick="window.location.href='/auth'">
+                                    Panelə daxil ol
+                                </button>
                               <button class="btn btn-secondary" onclick="toggleTheme()" title="Theme">🌓</button>
                           </div>
                           <div class="flex items-center md:hidden gap-2">
