@@ -1,14 +1,16 @@
 import { useCallback, useRef, useState } from 'react';
-import { whisperApi } from '../api/whisperApi';
+import { interviewService } from '../services/interviewService';
 
 export function useRecorder() {
   const recorderRef = useRef(null);
   const chunksRef = useRef([]);
   const [recording, setRecording] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
 
   const start = useCallback(async (stream) => {
     const activeStream = stream || await navigator.mediaDevices.getUserMedia({ audio: true });
-    const recorder = new MediaRecorder(activeStream, { mimeType: MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : undefined });
+    const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '';
+    const recorder = new MediaRecorder(activeStream, mimeType ? { mimeType } : {});
     chunksRef.current = [];
     recorder.ondataavailable = ({ data }) => { if (data.size) chunksRef.current.push(data); };
     recorder.start();
@@ -22,14 +24,27 @@ export function useRecorder() {
     recorder.onerror = reject;
     recorder.onstop = async () => {
       setRecording(false);
+      setTranscribing(true);
       try {
         const blob = new Blob(chunksRef.current, { type: recorder.mimeType || 'audio/webm' });
-        const data = await whisperApi.transcribe(new File([blob], 'answer.webm', { type: blob.type }));
-        resolve(data.transcript || '');
-      } catch (error) { reject(error); }
+        const file = new File([blob], 'answer.webm', { type: blob.type });
+        const data = await interviewService.openai.transcribe(file);
+        resolve(data?.transcript || '');
+      } catch (err) {
+        reject(err);
+      } finally {
+        setTranscribing(false);
+      }
     };
     recorder.stop();
   }), []);
 
-  return { recording, start, stopAndTranscribe };
+  const stop = useCallback(() => {
+    if (recorderRef.current?.state === 'recording') {
+      recorderRef.current.stop();
+      setRecording(false);
+    }
+  }, []);
+
+  return { recording, transcribing, start, stop, stopAndTranscribe };
 }

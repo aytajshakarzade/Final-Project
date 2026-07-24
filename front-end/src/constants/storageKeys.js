@@ -1,13 +1,8 @@
 export const STORAGE_KEYS = Object.freeze({
-  users: 'users',
-  jobs: 'jobs',
-  apps: 'apps',
-  training: 'training',
-  interviews: 'interviews',
-  drafts: 'drafts',
-  session: 'session',
-  theme: 'theme',
-  themeVersion: 'theme-version',
+  auth: 'silent-interview.auth',
+  theme: 'silent-interview.theme',
+  language: 'silent-interview.language',
+  sidebarCollapsed: 'silent-interview.sidebar-collapsed',
 });
 
-export const LANGUAGE_STORAGE_KEY = 'silent-interview-language';
+export const LANGUAGE_STORAGE_KEY = STORAGE_KEYS.language;

@@ -1,5 +1,3 @@
-export const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
-export const average = (values, fallback = 0) => {
-  const numeric = values.filter((value) => Number.isFinite(Number(value))).map(Number);
-  return numeric.length ? Math.round(numeric.reduce((sum, value) => sum + value, 0) / numeric.length) : fallback;
-};
+export const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+export const average = (arr) => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+export const percent = (value, total) => total ? Math.round((value / total) * 100) : 0;
